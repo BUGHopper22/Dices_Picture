@@ -156,7 +156,7 @@ if __name__ == '__main__':
     min_dice_size = 10
     image_occurence_in_shortest_side = 200
     image_name = "alberto_elena_7"
-    image = Image.open(r"input/original_photos/{}.jpg".format(image_name))
+    image = Image.open(r"input/photos/{}.jpg".format(image_name))
 
     imageWidth, imageHeight = image.size
     diceSize = get_dice_size(imageWidth, imageHeight, image_occurence_in_shortest_side, min_dice_size)
