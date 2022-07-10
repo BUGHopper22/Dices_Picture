@@ -1,7 +1,5 @@
-from PIL import Image, ImageChops, ImageOps
 import numpy as np
-from os import listdir
-from os.path import isfile, join
+from PIL import Image, ImageChops
 
 
 def print_hi(name):
@@ -42,7 +40,8 @@ def get_closest_image(original_color, img_array):
     closest_element = None
 
     for element in img_array:
-        r_a, g_a, b_a = img_array[element].get("color").getpixel((1, 1))
+        # r_a, g_a, b_a = img_array[element].get("color").getpixel((1, 1))
+        r_a, g_a, b_a = img_array[element].get("color")
         color_element_code = np.array((r_a, g_a, b_a))
         actual_element_distance = get_actual_element_distance(original_color_code, color_element_code)
         if closest_distance > actual_element_distance:
@@ -53,13 +52,14 @@ def get_closest_image(original_color, img_array):
     return img_array.get(closest_element).get("img")
 
 
-def dice_size(image_width, image_height, image_occurence_in_shortest_side, min_dice_size):
-
-    dice_size = min_dice_size
+def get_dice_size(image_width, image_height, image_occurence_in_shortest_side, min_dice_size):
     if image_width < image_height:
         dice_size = int(image_width / image_occurence_in_shortest_side)
     else:
         dice_size = int(image_height / image_occurence_in_shortest_side)
+
+    if dice_size < min_dice_size:
+        dice_size = min_dice_size
 
     return dice_size
 
@@ -71,107 +71,50 @@ def dice_size(image_width, image_height, image_occurence_in_shortest_side, min_d
 #         img_pixel_array = Image.open(r"input/dices/black/0.jpg"),
 #     s = "s"
 
-def build_img_array():
-    return {
-        "black_0":
-            {
-                "img": Image.open(r"input/dices/black/0.jpg"),
-                "color": Image.open(r"input/dices/black/0.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
+def build_dice_array_rgb_gap():
+    skip_rgb_color_number = 18
+    actual_color_number = 0
+    img_array = {}
+    for i in range(0, 7):
+        key = "black_{}".format(i)
+        img_array[key] = {
+                "img": Image.open(r"input/dices/black/{}.jpg".format(i)),
+                "color": (actual_color_number, actual_color_number, actual_color_number),
                 "count": 0
-            },
-        "black_1":
-            {
-                "img": Image.open(r"input/dices/black/1.jpg"),
-                "color": Image.open(r"input/dices/black/1.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
+            }
+        actual_color_number = actual_color_number + skip_rgb_color_number
+
+    for i in range(0, 7):
+        key = "white_{}".format(i)
+        img_array[key] = {
+                "img": Image.open(r"input/dices/white/{}.jpg".format(i)),
+                "color": (actual_color_number, actual_color_number, actual_color_number),
                 "count": 0
-            },
-        "black_2":
-            {
-                "img": Image.open(r"input/dices/black/2.jpg"),
-                "color": Image.open(r"input/dices/black/3.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "black_3":
-            {
-                "img": Image.open(r"input/dices/black/3.jpg"),
-                "color": Image.open(r"input/dices/black/4.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "black_4":
-            {
-                "img": Image.open(r"input/dices/black/4.jpg"),
-                "color": Image.open(r"input/dices/black/4.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "black_5":
-            {
-                "img": Image.open(r"input/dices/black/5.jpg"),
-                "color": Image.open(r"input/dices/black/5.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "black_6":
-            {
-                "img": Image.open(r"input/dices/black/6.jpg"),
-                "color": Image.open(r"input/dices/black/6.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_0":
-            {
-                "img": Image.open(r"input/dices/white/0.jpg"),
-                "color": Image.open(r"input/dices/white/0.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_1":
-            {
-                "img": Image.open(r"input/dices/white/1.jpg"),
-                "color": Image.open(r"input/dices/white/1.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_2":
-            {
-                "img": Image.open(r"input/dices/white/2.jpg"),
-                "color": Image.open(r"input/dices/white/2.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_3":
-            {
-                "img": Image.open(r"input/dices/white/3.jpg"),
-                "color": Image.open(r"input/dices/white/3.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_4":
-            {
-                "img": Image.open(r"input/dices/white/4.jpg"),
-                "color": Image.open(r"input/dices/white/4.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_5":
-            {
-                "img": Image.open(r"input/dices/white/5.jpg"),
-                "color": Image.open(r"input/dices/white/5.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-        "white_6":
-            {
-                "img": Image.open(r"input/dices/white/6.jpg"),
-                "color": Image.open(r"input/dices/white/6.jpg").convert('P', palette=Image.ADAPTIVE, colors=1).convert(
-                    'RGB'),
-                "count": 0
-            },
-    }
+            }
+        actual_color_number = actual_color_number + skip_rgb_color_number
+    return img_array
+
+
+def build_dice_array_with_adaptive_color():
+    img_array = {}
+    for i in range(0, 7):
+        key = "black_{}".format(i)
+        img_array[key] = {
+            "img": Image.open(r"input/dices/black/{}.jpg".format(i)),
+            "color": Image.open(r"input/dices/black/{}.jpg".format(i)).convert('P', palette=Image.ADAPTIVE, colors=1).convert(
+                    'RGB').getpixel((1, 1)),
+            "count": 0
+        }
+
+    for i in range(0, 7):
+        key = "white_{}".format(i)
+        img_array[key] = {
+            "img": Image.open(r"input/dices/white/{}.jpg".format(i)),
+            "color": Image.open(r"input/dices/white/{}.jpg".format(i)).convert('P', palette=Image.ADAPTIVE, colors=1).convert(
+                    'RGB').getpixel((1, 1)),
+            "count": 0
+        }
+    return img_array
 
 
 def convert_with_palette():
@@ -201,22 +144,30 @@ def x():
     ImageChops.invert(Image.open(r"input/dices/black/6.jpg")).convert('RGB').save(r"input/dices/white/6.jpg")
 
 
+def print_created_image(image_copy, img_array):
+    print_img_occurrence(img_array)
+    image_copy.show()
+    image_copy.save("output/{}.jpg".format(image_name))
+
+
 if __name__ == '__main__':
-    # build_img_palette_array()
 
-    min_dice_size = 14
-    image_occurence_in_shortest_side = 100
-    image_name = "elena"
+    # CONSTANTS
+    min_dice_size = 10
+    image_occurence_in_shortest_side = 200
+    image_name = "alberto_elena_7"
+    image = Image.open(r"input/original_photos/{}.jpg".format(image_name))
 
-    image = Image.open(r"input/{}.jpg".format(image_name))
-    # gray_image = ImageOps.grayscale(image)
     imageWidth, imageHeight = image.size
-    image_copy = image.copy()
+    diceSize = get_dice_size(imageWidth, imageHeight, image_occurence_in_shortest_side, min_dice_size)
 
-    diceSize = dice_size(imageWidth, imageHeight, image_occurence_in_shortest_side, min_dice_size)
-    img_array = build_img_array()
+    img_array_adaptive = build_dice_array_with_adaptive_color()
+    img_array_rgb_gap = build_dice_array_rgb_gap()
 
+    image_copy_adaptive = image.copy()
+    image_copy_rgb_gap = image.copy()
     img_count = 0
+
     for y in range(0, imageHeight, diceSize):
         for x in range(0, imageWidth, diceSize):
             box = (x, y, x + diceSize, y + diceSize)
@@ -224,21 +175,18 @@ if __name__ == '__main__':
 
             cropped_color = cropped_image.convert('P', palette=Image.ADAPTIVE, colors=1).convert('RGB')
             r, g, b = cropped_color.getpixel((1, 1))
-            image_found = get_closest_image(cropped_color, img_array)
+
+            image_found_adaptive = get_closest_image(cropped_color, img_array_adaptive)
+            image_found_rgb_gap = get_closest_image(cropped_color, img_array_rgb_gap)
 
             position = (x, y)
-            image_copy.paste(image_found.resize((diceSize, diceSize)), position)
+            image_copy_adaptive.paste(image_found_adaptive.resize((diceSize, diceSize)), position)
+            # image_copy_rgb_gap.paste(image_found_rgb_gap.resize((diceSize, diceSize)), position)
 
             print("image anlyzed: {}".format(img_count))
             img_count += 1
 
-    print_img_occurrence(img_array)
-    image_copy.show()
-    image_copy.save("output/{}.jpg".format(image_name))
-    # Image.open(r"input/dices/5.png").convert('P', palette=Image.ADAPTIVE, colors=1).convert('RGB').show()
-
-    # box = (0, 0, 500, 500)
-    # cropped_image = image.crop(box)
-    # cropped_image.save(r"output/cropped_image.jpg")
-    # result = cropped_image.convert('P', palette=Image.ADAPTIVE, colors=2)
-    # result.show()
+    # print_created_image(image_copy_adaptive, image_found_adaptive)
+    # print_created_image(image_copy_rgb_gap, image_found_rgb_gap)
+    image_copy_adaptive.show()
+    image_copy_adaptive.save("output/{}.jpg".format(image_name))
