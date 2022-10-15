@@ -1,4 +1,5 @@
 import numpy as np
+import yaml
 from PIL import Image, ImageChops
 
 
@@ -149,14 +150,19 @@ def print_created_image(image_copy, img_array):
     image_copy.show()
     image_copy.save("output/{}.jpg".format(image_name))
 
+def read_yaml():
+    with open('config/application.yaml', "r") as f:
+        return yaml.load(f, yaml.FullLoader)
 
 if __name__ == '__main__':
 
+    props = read_yaml()
     # CONSTANTS
-    min_dice_size = 10
-    image_occurence_in_shortest_side = 200
-    image_name = "alberto_elena_7"
-    image = Image.open(r"input/photos/{}.jpg".format(image_name))
+    min_dice_size = props["MIN_DICE_SIZE"]
+    image_occurence_in_shortest_side = props['IMAGE_OCCURENCE_IN_SHORTEST_SIDE']
+    image_name = props['IMAGE_NAME']
+    path = props['PATH']
+    image = Image.open(r"{}{}".format(path,image_name))
 
     imageWidth, imageHeight = image.size
     diceSize = get_dice_size(imageWidth, imageHeight, image_occurence_in_shortest_side, min_dice_size)

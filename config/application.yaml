@@ -1,0 +1,4 @@
+MIN_DICE_SIZE: 10
+IMAGE_OCCURENCE_IN_SHORTEST_SIDE: 200
+IMAGE_NAME: "mare.png"
+PATH: "input/my_photos/"
